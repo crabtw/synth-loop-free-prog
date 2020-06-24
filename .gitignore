@@ -1,3 +1,6 @@
+/.direnv
+/.envrc
+/.cargo
 /target
 **/*.rs.bk
 Cargo.lock

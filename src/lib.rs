@@ -25,7 +25,7 @@ use z3::ast::{Ast, Bool, BV as BitVec};
 
 const FULL_BIT_WIDTH: u32 = 32;
 
-fn and<'a, 'b>(context: &'a z3::Context, exprs: impl IntoIterator<Item = &'b Bool<'a>>) -> Bool<'a>
+fn and_<'a, 'b>(context: &'a z3::Context, exprs: impl IntoIterator<Item = &'b Bool<'a>>) -> Bool<'a>
 where
     'a: 'b,
 {
@@ -400,7 +400,7 @@ impl<'a> LocationVars<'a> {
             wfp.push(line_lt(l, &m));
         }
 
-        and(context, &wfp)
+        and_(context, &wfp)
     }
 
     fn consistent(
@@ -415,7 +415,7 @@ impl<'a> LocationVars<'a> {
                 cons.push(x._eq(y).not());
             }
         }
-        and(context, &cons)
+        and_(context, &cons)
     }
 
     fn acyclic(&self, context: &'a z3::Context, library: &Library) -> Bool<'a> {
@@ -431,7 +431,7 @@ impl<'a> LocationVars<'a> {
             }
         }
 
-        and(context, &acycs)
+        and_(context, &acycs)
     }
 }
 
@@ -641,7 +641,7 @@ impl<'a> Synthesizer<'a> {
         // different constants before completely abandoning these location
         // assignments.
 
-        let params = and(
+        let params = and_(
             self.context,
             &assignments
                 .params
@@ -653,7 +653,7 @@ impl<'a> Synthesizer<'a> {
                 .collect::<Vec<_>>(),
         );
 
-        let results = and(
+        let results = and_(
             self.context,
             &assignments
                 .results
@@ -665,7 +665,7 @@ impl<'a> Synthesizer<'a> {
                 .collect::<Vec<_>>(),
         );
 
-        let not_this_assignment = and(self.context, &[results, params]).not();
+        let not_this_assignment = and_(self.context, &[results, params]).not();
         self.not_invalid_assignments = self.not_invalid_assignments.and(&[&not_this_assignment]);
     }
 
@@ -832,7 +832,7 @@ impl<'a> Synthesizer<'a> {
             }
         }
 
-        and(self.context, &conn)
+        and_(self.context, &conn)
     }
 
     fn library(
@@ -862,7 +862,7 @@ impl<'a> Synthesizer<'a> {
             );
         }
 
-        and(self.context, &exprs)
+        and_(self.context, &exprs)
     }
 
     /// Have the solver generate initial concrete inputs for finite synthesis by
@@ -897,7 +897,7 @@ impl<'a> Synthesizer<'a> {
                     let inp = BitVec::from_i64(self.context, *inp as i64, FULL_BIT_WIDTH);
                     this_input.push(inp._eq(var));
                 }
-                let this_input = and(self.context, &this_input);
+                let this_input = and_(self.context, &this_input);
                 existing_inputs.push(this_input);
             }
             let existing_inputs = or(self.context, &existing_inputs);
