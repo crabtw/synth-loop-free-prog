@@ -1,9 +1,6 @@
-let
+{ pkgs ? import <nixpkgs> {} }:
 
-  sources = import ./nix/sources.nix;
-  pkgs = import sources.nixpkgs {};
-
-in pkgs.mkShell {
+pkgs.mkShell {
   buildInputs = with pkgs; [
     cargo
     rustc
